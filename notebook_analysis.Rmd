@@ -1,0 +1,54 @@
+---
+title: "Analysis Brain sizes"
+output:
+  html_document:
+    df_print: paged
+---
+```{r,echo=FALSE,message=FALSE}
+library(tidyverse)
+library(knitr)
+```
+
+Read in data from an sof project on 100 participants. Measured variables are brain size, head size, and gender.
+
+```{r}
+my_data<-read.csv("https://osf.io/4zbx2/download")
+```
+
+Calculate means and print a table.
+
+
+```{r}
+my_data_mean <- 
+  my_data %>% 
+  group_by(SEX) %>% 
+  summarise(mean_BV = mean(BRAIN_VOLUME),
+            sd_BV = sd(BRAIN_VOLUME))
+kable(my_data_mean,digits = 1)
+```
+
+For distributional information and outlier detection see boxplot below:
+
+```{r}
+p_1<-ggplot(aes(y=BRAIN_VOLUME,x=SEX),data=my_data)+geom_boxplot()+theme_classic()+
+  geom_jitter(width=.1,alpha=0.5)
+print(p_1)
+```
+
+Males have a larger brain than females, hmm tempting thought, but how about correcting for head size
+
+```{r}
+my_data <-
+  my_data %>% 
+  mutate(rel_BV = BRAIN_VOLUME/HEAD_SIZE)
+
+p_2<-ggplot(aes(y=rel_BV,x=SEX),data=my_data)+geom_boxplot()+theme_classic()+
+  geom_jitter(width=.1,alpha=0.5)
+print(p_2)
+```
+
+Ok, now for some statistics and linear regression, etc...
+
+
+
+
